@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  frontend:
+    build: ./client_game
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    stdin_open: true
+
+  backend:
+    build: ./backend
+    ports:
+      - "3500:3500"
+    environment:
+      - DATABASE_URL=mysql://simpleUser:jim12345@mysql-db:3306/test
+      - DB_HOST=mysql-db
+      - DB_PORT=3306
+      - DB_USER=simpleUser
+      - DB_PASSWORD=jim12345
+      - DB_DATABASE=test
+      - DB_DIALECT=mysql
+    depends_on:
+      - mysql-db
+
+  mysql-db:
+    image: mysql:8.0
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_PASSWORD=root12345
+      - MYSQL_USER=simpleUser
+      - MYSQL_PASSWORD=jim12345
+      - MYSQL_DATABASE=test
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
